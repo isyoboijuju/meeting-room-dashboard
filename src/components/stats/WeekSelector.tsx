@@ -30,18 +30,18 @@ export default function WeekSelector({ weekOf, onPrev, onNext }: Props) {
     <div className="flex items-center gap-3">
       <button
         onClick={onPrev}
-        className="w-8 h-8 flex items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-200"
+        className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 active:scale-[0.98]"
         aria-label="Previous week"
       >
         &#8249;
       </button>
-      <span className="text-sm font-medium text-neutral-700 min-w-[180px] text-center">
+      <span className="text-sm font-medium text-slate-700 min-w-[180px] text-center">
         {formatWeekLabel(weekOf)}
       </span>
       <button
         onClick={onNext}
         disabled={isCurrentWeek}
-        className="w-8 h-8 flex items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-neutral-200"
+        className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
         aria-label="Next week"
       >
         &#8250;

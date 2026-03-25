@@ -15,19 +15,19 @@ export default function Dashboard() {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-50">
-        <p className="text-neutral-400">Loading...</p>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <p className="text-slate-400">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-slate-50">
       <Header />
       {session ? (
         <>
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-          <main className="p-6">
+          <main className="p-6 max-w-[1440px] mx-auto">
             {activeTab === "stats" && <StatsView />}
             {activeTab === "today" && <TodayView />}
             {activeTab === "reservations" && <ReservationTable />}
@@ -36,7 +36,7 @@ export default function Dashboard() {
         </>
       ) : (
         <div className="flex items-center justify-center min-h-[80vh]">
-          <p className="text-neutral-400">Please sign in to view the dashboard.</p>
+          <p className="text-slate-400">Please sign in to view the dashboard.</p>
         </div>
       )}
     </div>

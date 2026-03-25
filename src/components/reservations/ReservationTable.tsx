@@ -45,18 +45,17 @@ export default function ReservationTable() {
 
   return (
     <div className="space-y-4">
-      {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="bg-white border border-neutral-300 rounded-md px-3 py-2 text-sm text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#C4A882] transition-shadow duration-200"
+          className="bg-white border border-slate-300 rounded-md px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow duration-200"
         />
         <select
           value={selectedRoom}
           onChange={(e) => setSelectedRoom(e.target.value)}
-          className="bg-white border border-neutral-300 rounded-md px-3 py-2 text-sm text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#C4A882] transition-shadow duration-200"
+          className="bg-white border border-slate-300 rounded-md px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow duration-200"
         >
           <option value="all">All Rooms</option>
           {MEETING_ROOMS.map((room) => (
@@ -67,10 +66,9 @@ export default function ReservationTable() {
         </select>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border border-neutral-200 overflow-hidden">
+      <div className="rounded-xl border border-slate-200/60 overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-neutral-400 text-sm">
+          <div className="flex items-center justify-center py-16 text-slate-400 text-sm">
             Loading reservations...
           </div>
         ) : error ? (
@@ -80,7 +78,7 @@ export default function ReservationTable() {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-neutral-100 text-neutral-500 text-left">
+              <tr className="bg-slate-50 text-slate-500 text-left">
                 <th className="px-4 py-3 font-medium">Time</th>
                 <th className="px-4 py-3 font-medium">Room</th>
                 <th className="px-4 py-3 font-medium">Meeting Title</th>
@@ -88,12 +86,12 @@ export default function ReservationTable() {
                 <th className="px-4 py-3 font-medium">Duration</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-neutral-100">
+            <tbody className="bg-white divide-y divide-slate-100">
               {filtered.length === 0 ? (
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-4 py-16 text-center text-neutral-400"
+                    className="px-4 py-16 text-center text-slate-400"
                   >
                     No reservations for this date.
                   </td>
@@ -105,30 +103,30 @@ export default function ReservationTable() {
                   return (
                     <tr
                       key={event.id}
-                      className="transition-colors duration-200 hover:bg-neutral-50 cursor-default"
+                      className="transition-colors duration-200 hover:bg-slate-50 cursor-default"
                     >
-                      <td className="px-4 py-3 text-neutral-700 tabular-nums whitespace-nowrap">
+                      <td className="px-4 py-3 text-slate-700 font-mono tabular-nums whitespace-nowrap">
                         {formatTime(event.start)}–{formatTime(event.end)}
                       </td>
-                      <td className="px-4 py-3 text-neutral-700 whitespace-nowrap">
+                      <td className="px-4 py-3 text-slate-700 whitespace-nowrap">
                         {room ? (
                           <span>
-                            <span className="text-neutral-400 text-xs mr-1">
+                            <span className="text-slate-400 text-xs mr-1">
                               {room.floor}
                             </span>
                             {room.name}
                           </span>
                         ) : (
-                          <span className="text-neutral-400">{event.roomId}</span>
+                          <span className="text-slate-400">{event.roomId}</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-neutral-800 font-medium">
+                      <td className="px-4 py-3 text-slate-800 font-medium">
                         {event.title}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600">
+                      <td className="px-4 py-3 text-slate-600">
                         {event.organizer}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 tabular-nums whitespace-nowrap">
+                      <td className="px-4 py-3 text-slate-600 font-mono tabular-nums whitespace-nowrap">
                         {duration} min
                       </td>
                     </tr>

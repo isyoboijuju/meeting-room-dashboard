@@ -40,13 +40,15 @@ export default function KpiCards({ rooms }: Props) {
       {cards.map((card) => (
         <div
           key={card.label}
-          className="bg-white border border-neutral-200 rounded-xl p-5 flex flex-col gap-1 hover:shadow-md hover:scale-[1.01] transition-all duration-200 cursor-default"
+          className="bg-white border border-slate-200/60 rounded-xl p-5 flex flex-col gap-1 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out cursor-default"
         >
-          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+          <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
             {card.label}
           </span>
-          <span className="text-3xl font-bold text-neutral-900">{card.value}</span>
-          <span className="text-xs text-neutral-400">{card.sub}</span>
+          <span className="text-3xl font-bold text-slate-900 font-mono tabular-nums">
+            {card.value}
+          </span>
+          <span className="text-xs text-slate-400">{card.sub}</span>
         </div>
       ))}
     </div>

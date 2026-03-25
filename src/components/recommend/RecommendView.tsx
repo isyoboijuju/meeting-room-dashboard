@@ -41,16 +41,15 @@ export default function RecommendView() {
   }
 
   const inputClass =
-    "w-full bg-white border border-neutral-300 rounded-md px-3 py-2 text-sm text-neutral-900 " +
-    "focus:outline-none focus:ring-2 focus:ring-[#C4A882] focus:border-[#C4A882] transition-colors duration-200";
+    "w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm text-slate-900 " +
+    "focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200";
 
-  const labelClass = "block text-xs font-medium text-neutral-500 mb-1";
+  const labelClass = "block text-xs font-medium text-slate-500 mb-1";
 
   return (
     <div className="max-w-xl mx-auto space-y-6">
-      {/* Search Form */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-6 space-y-4">
-        <h2 className="text-base font-semibold text-neutral-900">
+      <div className="bg-white border border-slate-200/60 rounded-xl p-6 space-y-4 hover:shadow-lg transition-shadow duration-300">
+        <h2 className="text-base font-semibold text-slate-900">
           Find an Available Room
         </h2>
 
@@ -100,8 +99,8 @@ export default function RecommendView() {
           onClick={handleSearch}
           disabled={loading}
           className={
-            "w-full sm:w-auto px-6 py-2 rounded-md text-sm font-medium text-white bg-[#18181B] " +
-            "border border-transparent hover:border-[#C4A882] transition-all duration-200 " +
+            "w-full sm:w-auto px-6 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 " +
+            "hover:bg-indigo-700 transition-all duration-200 active:scale-[0.98] " +
             "disabled:opacity-60 disabled:cursor-not-allowed"
           }
         >
@@ -109,11 +108,10 @@ export default function RecommendView() {
         </button>
       </div>
 
-      {/* Results */}
       {results !== null && (
         <div className="space-y-3">
           {results.length === 0 ? (
-            <p className="text-sm text-neutral-400 text-center py-8">
+            <p className="text-sm text-slate-400 text-center py-8">
               No rooms available for this time slot.
             </p>
           ) : (
@@ -121,20 +119,20 @@ export default function RecommendView() {
               <div
                 key={room.id}
                 className={
-                  "bg-white border border-neutral-200 rounded-xl p-4 " +
-                  "hover:shadow-md transition-shadow duration-200"
+                  "bg-white border border-slate-200/60 rounded-xl p-4 " +
+                  "hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out"
                 }
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-neutral-900">
+                    <p className="text-sm font-semibold text-slate-900">
                       {room.name}
                     </p>
-                    <p className="text-xs text-neutral-500 mt-0.5">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       {room.floor} &middot; Capacity {room.capacity}
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs font-medium text-green-600 bg-green-50 px-2.5 py-1 rounded-full">
+                  <span className="shrink-0 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
                     Available until {formatAvailableUntil(room.availableUntil)}
                   </span>
                 </div>

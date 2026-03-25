@@ -44,19 +44,19 @@ export default function RoomStatusCard({ room, events, now }: Props) {
   const statusConfig = {
     available: {
       label: "Available",
-      dot: "bg-green-500",
-      border: "border-green-200",
-      badge: "bg-green-50 text-green-700",
+      dot: "bg-emerald-500",
+      border: "border-emerald-200",
+      badge: "bg-emerald-50 text-emerald-700",
     },
     "in-use": {
       label: "In Use",
-      dot: "bg-red-500",
-      border: "border-red-200",
-      badge: "bg-red-50 text-red-700",
+      dot: "bg-rose-500",
+      border: "border-rose-200",
+      badge: "bg-rose-50 text-rose-700",
     },
     upcoming: {
       label: "Upcoming",
-      dot: "bg-amber-400",
+      dot: "bg-amber-500",
       border: "border-amber-200",
       badge: "bg-amber-50 text-amber-700",
     },
@@ -69,16 +69,15 @@ export default function RoomStatusCard({ room, events, now }: Props) {
       className={`
         bg-white rounded-xl border ${config.border}
         p-4 flex flex-col gap-3
-        shadow-sm hover:shadow-md
-        transition-shadow duration-200
+        shadow-sm hover:shadow-lg hover:-translate-y-0.5
+        transition-all duration-300 ease-out
         cursor-default
       `}
     >
-      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-neutral-400 uppercase tracking-wider">{room.floor}</p>
-          <h3 className="text-base font-bold text-neutral-900 mt-0.5">{room.name}</h3>
+          <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{room.floor}</p>
+          <h3 className="text-base font-bold text-slate-900 mt-0.5">{room.name}</h3>
         </div>
         <span
           className={`
@@ -91,24 +90,22 @@ export default function RoomStatusCard({ room, events, now }: Props) {
         </span>
       </div>
 
-      {/* Capacity */}
-      <p className="text-xs text-neutral-400">
-        Capacity: <span className="font-medium text-neutral-600">{room.capacity}</span>
+      <p className="text-xs text-slate-400">
+        Capacity: <span className="font-medium text-slate-600">{room.capacity}</span>
       </p>
 
-      {/* Status detail */}
       {status.kind === "in-use" && (
         <div className="space-y-2">
-          <p className="text-xs text-neutral-600 truncate font-medium" title={status.event.title}>
+          <p className="text-xs text-slate-600 truncate font-medium" title={status.event.title}>
             {status.event.title}
           </p>
-          <div className="w-full bg-neutral-100 rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
             <div
-              className="bg-red-500 h-full rounded-full transition-all duration-500"
+              className="bg-rose-500 h-full rounded-full transition-all duration-500"
               style={{ width: `${status.progressPct}%` }}
             />
           </div>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-slate-400">
             {status.remainingMin} min remaining
           </p>
         </div>
@@ -116,17 +113,17 @@ export default function RoomStatusCard({ room, events, now }: Props) {
 
       {status.kind === "upcoming" && (
         <div className="space-y-1">
-          <p className="text-xs text-neutral-600 truncate font-medium" title={status.event.title}>
+          <p className="text-xs text-slate-600 truncate font-medium" title={status.event.title}>
             {status.event.title}
           </p>
-          <p className="text-xs font-medium" style={{ color: "#C4A882" }}>
+          <p className="text-xs font-medium text-amber-600">
             Starts in {status.startsInMin} min
           </p>
         </div>
       )}
 
       {status.kind === "available" && (
-        <p className="text-xs text-green-600 font-medium">Ready to book</p>
+        <p className="text-xs text-emerald-600 font-medium">Ready to book</p>
       )}
     </div>
   );
