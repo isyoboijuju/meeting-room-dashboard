@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Header from "@/components/layout/Header";
 import TabNavigation, { TabId } from "@/components/layout/TabNavigation";
+import ReservationTable from "@/components/reservations/ReservationTable";
+import RecommendView from "@/components/recommend/RecommendView";
+import TodayView from "@/components/today/TodayView";
+import StatsView from "@/components/stats/StatsView";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -24,10 +28,10 @@ export default function Dashboard() {
         <>
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
           <main className="p-6">
-            {activeTab === "stats" && <div className="text-neutral-400">Stats / Heatmap — loading...</div>}
-            {activeTab === "today" && <div className="text-neutral-400">Today View — loading...</div>}
-            {activeTab === "reservations" && <div className="text-neutral-400">Reservations — loading...</div>}
-            {activeTab === "recommend" && <div className="text-neutral-400">Recommend — loading...</div>}
+            {activeTab === "stats" && <StatsView />}
+            {activeTab === "today" && <TodayView />}
+            {activeTab === "reservations" && <ReservationTable />}
+            {activeTab === "recommend" && <RecommendView />}
           </main>
         </>
       ) : (
