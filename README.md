@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DSRV Meeting Room Dashboard
 
-## Getting Started
+Browser-based dashboard for visualizing DSRV meeting room reservations from Google Calendar.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Stats / Heatmap** — Room occupancy bar chart + weekly booking heatmap (Mon-Fri, 09:00-19:00)
+- **Today** — Real-time room status cards + Gantt-style timeline
+- **Reservations** — Filterable reservation table by date and room
+- **Room Recommendation** — Find available rooms by attendees and time
+- **PDF Export** — Monthly report download
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js 15 (App Router) + React 19
+- Tailwind CSS
+- next-auth v5 (Google OAuth 2.0)
+- Google Calendar API (googleapis)
+- recharts (bar charts)
+- jsPDF (PDF export)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Prerequisites
 
-## Learn More
+- Node.js 18+
+- Google Cloud Console project with Calendar API enabled
 
-To learn more about Next.js, take a look at the following resources:
+## Google Cloud Console Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project (or select existing)
+3. Enable **Google Calendar API** (APIs & Services → Library)
+4. Go to **APIs & Services → Credentials**
+5. Click **Create Credentials → OAuth Client ID**
+   - Application type: **Web application**
+   - Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
+6. Copy the **Client ID** and **Client Secret**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Setup
 
-## Deploy on Vercel
+1. Clone and install:
+   ```bash
+   git clone <repo-url>
+   cd meeting-room-dashboard
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Create `.env.local` from template:
+   ```bash
+   cp .env.example .env.local
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Fill in `.env.local`:
+   ```env
+   GOOGLE_CLIENT_ID=<your-client-id>
+   GOOGLE_CLIENT_SECRET=<your-client-secret>
+   NEXTAUTH_SECRET=<run: openssl rand -base64 32>
+   NEXTAUTH_URL=http://localhost:3000
+   GOOGLE_CALENDAR_ID=c_3csipio0le728mjl6gdgo8j3e4@group.calendar.google.com
+   ```
+
+4. Run:
+   ```bash
+   npm run dev
+   ```
+
+5. Open http://localhost:3000, sign in with Google.
+
+## Meeting Rooms
+
+| Room | Floor | Capacity |
+|------|-------|----------|
+| GENESIS | B1F | 12 |
+| CONSENSUS | B1F | 6 |
+| BEACON | B1F | 12 |
+| HARD FORK | B1F | 6 |
+| MERKLE | 2F | 6 |
+| NONCE | 1F | 6 |
+| Lounge | B1F | 30 |
