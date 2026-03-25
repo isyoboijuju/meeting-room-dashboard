@@ -57,7 +57,7 @@ export default function ReservationTable() {
           onChange={(e) => setSelectedRoom(e.target.value)}
           className="bg-white border border-slate-300 rounded-md px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow duration-200"
         >
-          <option value="all">All Rooms</option>
+          <option value="all">전체 회의실</option>
           {MEETING_ROOMS.map((room) => (
             <option key={room.id} value={room.id}>
               {room.floor} · {room.name}
@@ -69,21 +69,21 @@ export default function ReservationTable() {
       <div className="rounded-xl border border-slate-200/60 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16 text-slate-400 text-sm">
-            Loading reservations...
+            예약을 불러오는 중...
           </div>
         ) : error ? (
           <div className="flex items-center justify-center py-16 text-red-400 text-sm">
-            Failed to load reservations: {error}
+            예약을 불러오지 못했습니다: {error}
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 text-slate-500 text-left">
-                <th className="px-4 py-3 font-medium">Time</th>
-                <th className="px-4 py-3 font-medium">Room</th>
-                <th className="px-4 py-3 font-medium">Meeting Title</th>
-                <th className="px-4 py-3 font-medium">Organizer</th>
-                <th className="px-4 py-3 font-medium">Duration</th>
+                <th className="px-4 py-3 font-medium">시간</th>
+                <th className="px-4 py-3 font-medium">회의실</th>
+                <th className="px-4 py-3 font-medium">회의 제목</th>
+                <th className="px-4 py-3 font-medium">주최자</th>
+                <th className="px-4 py-3 font-medium">소요 시간</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-100">
@@ -93,7 +93,7 @@ export default function ReservationTable() {
                     colSpan={5}
                     className="px-4 py-16 text-center text-slate-400"
                   >
-                    No reservations for this date.
+                    해당 날짜에 예약이 없습니다.
                   </td>
                 </tr>
               ) : (
@@ -127,7 +127,7 @@ export default function ReservationTable() {
                         {event.organizer}
                       </td>
                       <td className="px-4 py-3 text-slate-600 font-mono tabular-nums whitespace-nowrap">
-                        {duration} min
+                        {duration}분
                       </td>
                     </tr>
                   );

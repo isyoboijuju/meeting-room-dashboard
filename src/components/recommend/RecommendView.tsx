@@ -50,13 +50,13 @@ export default function RecommendView() {
     <div className="max-w-xl mx-auto space-y-6">
       <div className="bg-white border border-slate-200/60 rounded-xl p-6 space-y-4 hover:shadow-lg transition-shadow duration-300">
         <h2 className="text-base font-semibold text-slate-900">
-          Find an Available Room
+          빈 회의실 찾기
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label htmlFor="capacity" className={labelClass}>
-              Attendees
+              참석자 수
             </label>
             <input
               id="capacity"
@@ -70,7 +70,7 @@ export default function RecommendView() {
 
           <div>
             <label htmlFor="date" className={labelClass}>
-              Date
+              날짜
             </label>
             <input
               id="date"
@@ -83,7 +83,7 @@ export default function RecommendView() {
 
           <div>
             <label htmlFor="time" className={labelClass}>
-              Time
+              시간
             </label>
             <input
               id="time"
@@ -104,7 +104,7 @@ export default function RecommendView() {
             "disabled:opacity-60 disabled:cursor-not-allowed"
           }
         >
-          {loading ? "Searching..." : "Search"}
+          {loading ? "검색 중..." : "검색"}
         </button>
       </div>
 
@@ -112,7 +112,7 @@ export default function RecommendView() {
         <div className="space-y-3">
           {results.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-8">
-              No rooms available for this time slot.
+              해당 시간에 사용 가능한 회의실이 없습니다.
             </p>
           ) : (
             results.map((room) => (
@@ -129,11 +129,11 @@ export default function RecommendView() {
                       {room.name}
                     </p>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      {room.floor} &middot; Capacity {room.capacity}
+                      {room.floor} &middot; 수용 인원 {room.capacity}
                     </p>
                   </div>
                   <span className="shrink-0 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
-                    Available until {formatAvailableUntil(room.availableUntil)}
+                    {formatAvailableUntil(room.availableUntil)}까지 사용 가능
                   </span>
                 </div>
               </div>

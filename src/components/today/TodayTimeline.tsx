@@ -32,7 +32,7 @@ function currentTimePercent(now: Date): number | null {
 
 function formatTime(isoString: string): string {
   const d = new Date(isoString);
-  return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+  return d.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
 type TooltipState = {
@@ -57,7 +57,7 @@ export default function TodayTimeline({ rooms, events, now }: Props) {
   return (
     <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm p-5 overflow-x-auto hover:shadow-lg transition-shadow duration-300">
       <h2 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider">
-        Room Timeline
+        회의실 타임라인
       </h2>
 
       <div ref={containerRef} className="relative min-w-[600px]">

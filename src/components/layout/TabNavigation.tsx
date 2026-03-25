@@ -1,10 +1,10 @@
 "use client";
 
 const TABS = [
-  { id: "stats", label: "Stats / Heatmap" },
-  { id: "today", label: "Today" },
-  { id: "reservations", label: "Reservations" },
-  { id: "recommend", label: "Recommend" },
+  { id: "stats", label: "통계 / 히트맵" },
+  { id: "today", label: "오늘" },
+  { id: "reservations", label: "예약 현황" },
+  { id: "recommend", label: "추천" },
 ] as const;
 
 export type TabId = (typeof TABS)[number]["id"];

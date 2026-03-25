@@ -16,7 +16,7 @@ export default function Dashboard() {
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <p className="text-slate-400">Loading...</p>
+        <p className="text-slate-400">로딩 중...</p>
       </div>
     );
   }
@@ -36,7 +36,7 @@ export default function Dashboard() {
         </>
       ) : (
         <div className="flex items-center justify-center min-h-[80vh]">
-          <p className="text-slate-400">Please sign in to view the dashboard.</p>
+          <p className="text-slate-400">대시보드를 보려면 로그인해 주세요.</p>
         </div>
       )}
     </div>

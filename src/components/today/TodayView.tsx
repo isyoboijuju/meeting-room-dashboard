@@ -15,7 +15,7 @@ export default function TodayView() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">Loading today&apos;s schedule...</p>
+        <p className="text-slate-400 text-sm">오늘 일정을 불러오는 중...</p>
       </div>
     );
   }
@@ -23,7 +23,7 @@ export default function TodayView() {
   if (error) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-red-400 text-sm">Failed to load events: {error}</p>
+        <p className="text-red-400 text-sm">일정을 불러오지 못했습니다: {error}</p>
       </div>
     );
   }
@@ -32,14 +32,14 @@ export default function TodayView() {
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-bold text-slate-900">
-          {now.toLocaleDateString("en-US", {
+          {now.toLocaleDateString("ko-KR", {
             weekday: "long",
             month: "long",
             day: "numeric",
           })}
         </h2>
         <p className="text-sm text-slate-400 mt-0.5">
-          {now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })}
+          {now.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false })}
         </p>
       </div>
 

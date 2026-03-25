@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DSRV Meeting Room Dashboard",
-  description: "Meeting room reservation dashboard for DSRV",
+  title: "DSRV 회의실 대시보드",
+  description: "DSRV 회의실 예약 대시보드",
 };
 
 export default function RootLayout({

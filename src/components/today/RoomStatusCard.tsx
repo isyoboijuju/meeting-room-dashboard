@@ -43,19 +43,19 @@ export default function RoomStatusCard({ room, events, now }: Props) {
 
   const statusConfig = {
     available: {
-      label: "Available",
+      label: "사용 가능",
       dot: "bg-emerald-500",
       border: "border-emerald-200",
       badge: "bg-emerald-50 text-emerald-700",
     },
     "in-use": {
-      label: "In Use",
+      label: "사용 중",
       dot: "bg-rose-500",
       border: "border-rose-200",
       badge: "bg-rose-50 text-rose-700",
     },
     upcoming: {
-      label: "Upcoming",
+      label: "곧 시작",
       dot: "bg-amber-500",
       border: "border-amber-200",
       badge: "bg-amber-50 text-amber-700",
@@ -91,7 +91,7 @@ export default function RoomStatusCard({ room, events, now }: Props) {
       </div>
 
       <p className="text-xs text-slate-400">
-        Capacity: <span className="font-medium text-slate-600">{room.capacity}</span>
+        수용 인원: <span className="font-medium text-slate-600">{room.capacity}</span>
       </p>
 
       {status.kind === "in-use" && (
@@ -106,7 +106,7 @@ export default function RoomStatusCard({ room, events, now }: Props) {
             />
           </div>
           <p className="text-xs text-slate-400">
-            {status.remainingMin} min remaining
+            {status.remainingMin}분 남음
           </p>
         </div>
       )}
@@ -117,13 +117,13 @@ export default function RoomStatusCard({ room, events, now }: Props) {
             {status.event.title}
           </p>
           <p className="text-xs font-medium text-amber-600">
-            Starts in {status.startsInMin} min
+            {status.startsInMin}분 후 시작
           </p>
         </div>
       )}
 
       {status.kind === "available" && (
-        <p className="text-xs text-emerald-600 font-medium">Ready to book</p>
+        <p className="text-xs text-emerald-600 font-medium">예약 가능</p>
       )}
     </div>
   );
