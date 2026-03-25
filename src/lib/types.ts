@@ -28,3 +28,10 @@ export type HeatmapCell = {
   count: number;
   rooms: string[];
 };
+
+export type StatsMeta = {
+  startDate: string;
+  endDate: string;
+  weekdays: number;
+  weeks: number;
+};

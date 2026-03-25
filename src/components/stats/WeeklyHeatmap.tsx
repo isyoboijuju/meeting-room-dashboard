@@ -5,9 +5,10 @@ import { HeatmapCell } from "@/lib/types";
 
 type Props = {
   cells: HeatmapCell[];
+  title?: string;
 };
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+const DAYS = ["월", "화", "수", "목", "금"];
 const HOURS = Array.from({ length: 10 }, (_, i) => i + 9);
 
 // Indigo gradient: slate-100 → indigo-100 → indigo-300 → indigo-500 → indigo-700
@@ -43,7 +44,7 @@ type TooltipState = {
   y: number;
 } | null;
 
-export default function WeeklyHeatmap({ cells }: Props) {
+export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵" }: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null);
 
   const maxCount = Math.max(...cells.map((c) => c.count), 1);
@@ -54,16 +55,16 @@ export default function WeeklyHeatmap({ cells }: Props) {
   }
 
   return (
-    <div className="bg-white border border-slate-200/60 rounded-xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out relative">
-      <h3 className="text-sm font-semibold text-slate-700 mb-4">
-        Weekly Booking Heatmap
+    <div className="bg-white border border-slate-200/60 rounded-xl p-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out relative">
+      <h3 className="text-base font-semibold text-slate-700 mb-3">
+        {title}
       </h3>
 
       <div className="overflow-x-auto">
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "48px repeat(5, 1fr)",
+            gridTemplateColumns: "56px repeat(5, 1fr)",
             gridTemplateRows: `24px repeat(${HOURS.length}, 1fr)`,
             gap: "3px",
             minWidth: "320px",
@@ -74,7 +75,7 @@ export default function WeeklyHeatmap({ cells }: Props) {
           {DAYS.map((day) => (
             <div
               key={day}
-              className="text-center text-xs font-semibold text-slate-500 flex items-center justify-center"
+              className="text-center text-sm font-semibold text-slate-500 flex items-center justify-center"
             >
               {day}
             </div>
@@ -82,7 +83,7 @@ export default function WeeklyHeatmap({ cells }: Props) {
 
           {HOURS.map((hour) => (
             <React.Fragment key={hour}>
-              <div className="text-right text-xs text-slate-400 pr-2 flex items-center justify-end">
+              <div className="text-right text-sm text-slate-400 pr-2 flex items-center justify-end">
                 {hour}:00
               </div>
 
@@ -96,7 +97,7 @@ export default function WeeklyHeatmap({ cells }: Props) {
                 return (
                   <div
                     key={`${dayIdx}-${hour}`}
-                    className="rounded-md h-8 flex items-center justify-center text-xs font-medium cursor-default transition-all duration-200 hover:ring-2 hover:ring-offset-1 hover:ring-indigo-400 select-none"
+                    className="rounded-md h-8 flex items-center justify-center text-sm font-medium cursor-default transition-all duration-200 hover:ring-2 hover:ring-offset-1 hover:ring-indigo-400 select-none"
                     style={{ backgroundColor: bg, color: textColor }}
                     onMouseEnter={(e) => {
                       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -121,8 +122,8 @@ export default function WeeklyHeatmap({ cells }: Props) {
       </div>
 
       {/* Color scale legend */}
-      <div className="flex items-center gap-2 mt-4 text-xs text-slate-400">
-        <span>Low</span>
+      <div className="flex items-center gap-2 mt-4 text-sm text-slate-400">
+        <span>낮음</span>
         {INTENSITY_COLORS.slice(1).map((color, i) => (
           <div
             key={i}
@@ -130,7 +131,7 @@ export default function WeeklyHeatmap({ cells }: Props) {
             style={{ backgroundColor: color }}
           />
         ))}
-        <span>High</span>
+        <span>높음</span>
       </div>
 
       {/* Tooltip */}
@@ -144,7 +145,7 @@ export default function WeeklyHeatmap({ cells }: Props) {
               {DAYS[tooltip.day]} {tooltip.hour}:00–{tooltip.hour + 1}:00
             </p>
             <p className="text-slate-300">
-              {tooltip.count} booking{tooltip.count !== 1 ? "s" : ""}
+              {tooltip.count}건 예약
             </p>
             {tooltip.rooms.length > 0 && (
               <p className="text-slate-400 mt-1 leading-relaxed">

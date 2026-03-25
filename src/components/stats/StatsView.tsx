@@ -1,25 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useCalendarStats } from "@/hooks/useCalendarStats";
-import WeekSelector from "./WeekSelector";
+import { useCalendarStats, StatsQuery } from "@/hooks/useCalendarStats";
+import PeriodSelector from "./PeriodSelector";
 import KpiCards from "./KpiCards";
 import RoomUsageChart from "./RoomUsageChart";
 import WeeklyHeatmap from "./WeeklyHeatmap";
-
-function getMondayISO(date: Date): string {
-  const dow = date.getDay();
-  const mondayOffset = (dow + 6) % 7;
-  const monday = new Date(date);
-  monday.setDate(date.getDate() - mondayOffset);
-  return monday.toISOString().slice(0, 10);
-}
-
-function shiftWeek(iso: string, delta: number): string {
-  const date = new Date(iso + "T00:00:00");
-  date.setDate(date.getDate() + delta * 7);
-  return date.toISOString().slice(0, 10);
-}
+import { toLocalISO, getMondayOfWeek } from "@/lib/date-utils";
 
 async function exportPDF(month: string): Promise<void> {
   const res = await fetch(`/api/report/monthly?month=${month}`);
@@ -34,35 +21,35 @@ async function exportPDF(month: string): Promise<void> {
 
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
-  doc.text("DSRV Meeting Room Report", pageW / 2, y, { align: "center" });
+  doc.text("DSRV 회의실 리포트", pageW / 2, y, { align: "center" });
   y += 8;
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(100);
-  doc.text(`Month: ${report.month}`, pageW / 2, y, { align: "center" });
+  doc.text(`기간: ${report.month}`, pageW / 2, y, { align: "center" });
   y += 12;
 
   doc.setFontSize(13);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(24);
-  doc.text("Summary", 20, y);
+  doc.text("요약", 20, y);
   y += 7;
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
-  doc.text(`Total Bookings: ${report.totalBookings}`, 20, y);
+  doc.text(`총 예약 수: ${report.totalBookings}`, 20, y);
   y += 6;
-  doc.text(`Average Duration: ${report.avgDuration} minutes`, 20, y);
+  doc.text(`평균 소요 시간: ${report.avgDuration}분`, 20, y);
   y += 12;
 
   doc.setFontSize(13);
   doc.setFont("helvetica", "bold");
-  doc.text("Room Statistics", 20, y);
+  doc.text("회의실별 통계", 20, y);
   y += 7;
 
   const colX = [20, 80, 120, 155];
-  const headers = ["Room", "Occupancy", "Bookings", "Avg Duration"];
+  const headers = ["회의실", "사용률", "예약 수", "평균 시간"];
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
@@ -90,25 +77,43 @@ async function exportPDF(month: string): Promise<void> {
   doc.save(`dsrv-report-${report.month}.pdf`);
 }
 
+function getMonthFromQuery(query: StatsQuery): string {
+  switch (query.mode) {
+    case "week":
+      return query.weekOf.slice(0, 7);
+    case "month":
+      return query.month;
+    case "custom":
+      return query.startDate.slice(0, 7);
+  }
+}
+
+const PERIOD_SUB: Record<StatsQuery["mode"], string> = {
+  week: "이번 주",
+  month: "이번 달",
+  custom: "선택 기간",
+};
+
+const HEATMAP_TITLE: Record<StatsQuery["mode"], string> = {
+  week: "주간 예약 히트맵",
+  month: "월간 예약 히트맵",
+  custom: "기간 예약 히트맵",
+};
+
 export default function StatsView() {
-  const [weekOf, setWeekOf] = useState(() => getMondayISO(new Date()));
+  const [query, setQuery] = useState<StatsQuery>(() => ({
+    mode: "week",
+    weekOf: toLocalISO(getMondayOfWeek(new Date())),
+  }));
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  const { data, loading, error } = useCalendarStats(weekOf);
-
-  const handlePrev = useCallback(() => {
-    setWeekOf((w) => shiftWeek(w, -1));
-  }, []);
-
-  const handleNext = useCallback(() => {
-    setWeekOf((w) => shiftWeek(w, 1));
-  }, []);
+  const { data, loading, error } = useCalendarStats(query);
 
   const handleExportPDF = useCallback(async () => {
     setExporting(true);
     setExportError(null);
-    const month = weekOf.slice(0, 7);
+    const month = getMonthFromQuery(query);
     try {
       await exportPDF(month);
     } catch (err) {
@@ -116,12 +121,12 @@ export default function StatsView() {
     } finally {
       setExporting(false);
     }
-  }, [weekOf]);
+  }, [query]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <WeekSelector weekOf={weekOf} onPrev={handlePrev} onNext={handleNext} />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <PeriodSelector query={query} onQueryChange={setQuery} />
         <div className="flex items-center gap-3">
           {exportError && (
             <span className="text-xs text-red-500">{exportError}</span>
@@ -131,32 +136,32 @@ export default function StatsView() {
             disabled={exporting}
             className="text-sm px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-indigo-300 hover:shadow-sm active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
-            {exporting ? "Exporting..." : "Export PDF"}
+            {exporting ? "내보내는 중..." : "PDF 내보내기"}
           </button>
         </div>
       </div>
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600">
-          Failed to load stats: {error}
+          통계를 불러오지 못했습니다: {error}
         </div>
       )}
 
       {loading && !data && (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-6">
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-4">
+          <div className="space-y-3">
             <div className="grid grid-cols-2 gap-4">
               {[0, 1].map((i) => (
                 <div
                   key={i}
-                  className="bg-white border border-slate-200/60 rounded-xl p-5 h-24 animate-pulse"
+                  className="bg-white border border-slate-200/60 rounded-xl p-4 h-24 animate-pulse"
                 >
                   <div className="h-3 bg-slate-100 rounded w-1/2 mb-3" />
                   <div className="h-8 bg-slate-100 rounded w-2/3" />
                 </div>
               ))}
             </div>
-            <div className="bg-white border border-slate-200/60 rounded-xl p-5 h-72 animate-pulse">
+            <div className="bg-white border border-slate-200/60 rounded-xl p-4 h-72 animate-pulse">
               <div className="h-3 bg-slate-100 rounded w-1/3 mb-4" />
               <div className="space-y-2">
                 {[0, 1, 2, 3, 4].map((i) => (
@@ -165,19 +170,19 @@ export default function StatsView() {
               </div>
             </div>
           </div>
-          <div className="bg-white border border-slate-200/60 rounded-xl p-5 h-[420px] animate-pulse">
+          <div className="bg-white border border-slate-200/60 rounded-xl p-4 h-[420px] animate-pulse">
             <div className="h-3 bg-slate-100 rounded w-1/3 mb-4" />
           </div>
         </div>
       )}
 
       {data && (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-6">
-          <div className="space-y-4">
-            <KpiCards rooms={data.rooms} />
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-4">
+          <div className="space-y-3">
+            <KpiCards rooms={data.rooms} periodLabel={PERIOD_SUB[query.mode]} />
             <RoomUsageChart rooms={data.rooms} />
           </div>
-          <WeeklyHeatmap cells={data.heatmap} />
+          <WeeklyHeatmap cells={data.heatmap} title={HEATMAP_TITLE[query.mode]} />
         </div>
       )}
     </div>

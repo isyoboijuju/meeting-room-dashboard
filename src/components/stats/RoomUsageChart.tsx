@@ -36,9 +36,9 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
   const { name, occupancy } = payload[0].payload;
   return (
-    <div className="bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-lg">
+    <div className="bg-slate-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg">
       <p className="font-medium">{name}</p>
-      <p className="text-slate-300">{occupancy}% occupancy</p>
+      <p className="text-slate-300">{occupancy}% 사용률</p>
     </div>
   );
 }
@@ -56,8 +56,8 @@ export default function RoomUsageChart({ rooms }: Props) {
     .sort((a, b) => b.occupancy - a.occupancy);
 
   return (
-    <div className="bg-white border border-slate-200/60 rounded-xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out">
-      <h3 className="text-sm font-semibold text-slate-700 mb-4">Room Occupancy</h3>
+    <div className="bg-white border border-slate-200/60 rounded-xl p-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out">
+      <h3 className="text-base font-semibold text-slate-700 mb-3">회의실 사용률</h3>
       <ResponsiveContainer width="100%" height={260}>
         <BarChart
           data={sorted}
@@ -68,7 +68,7 @@ export default function RoomUsageChart({ rooms }: Props) {
             type="number"
             domain={[0, 100]}
             tickFormatter={(v) => `${v}%`}
-            tick={{ fontSize: 11, fill: "#94A3B8" }}
+            tick={{ fontSize: 12, fill: "#94A3B8" }}
             axisLine={false}
             tickLine={false}
           />
@@ -76,7 +76,7 @@ export default function RoomUsageChart({ rooms }: Props) {
             type="category"
             dataKey="name"
             width={72}
-            tick={{ fontSize: 11, fill: "#475569" }}
+            tick={{ fontSize: 12, fill: "#475569" }}
             axisLine={false}
             tickLine={false}
           />
@@ -91,7 +91,7 @@ export default function RoomUsageChart({ rooms }: Props) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-      <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+      <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
           &lt;50%

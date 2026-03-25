@@ -1,5 +1,7 @@
 "use client";
 
+import { toLocalISO } from "@/lib/date-utils";
+
 type Props = {
   weekOf: string;
   onPrev: () => void;
@@ -11,8 +13,8 @@ function formatWeekLabel(weekOf: string): string {
   const end = new Date(date);
   end.setDate(end.getDate() + 4);
 
-  const startStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const endStr = end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const startStr = date.toLocaleDateString("ko-KR", { month: "short", day: "numeric" });
+  const endStr = end.toLocaleDateString("ko-KR", { month: "short", day: "numeric", year: "numeric" });
   return `${startStr} – ${endStr}`;
 }
 
@@ -23,7 +25,7 @@ export default function WeekSelector({ weekOf, onPrev, onNext }: Props) {
     const mondayOffset = (dow + 6) % 7;
     const monday = new Date(today);
     monday.setDate(today.getDate() - mondayOffset);
-    return weekOf === monday.toISOString().slice(0, 10);
+    return weekOf === toLocalISO(monday);
   })();
 
   return (
@@ -31,7 +33,7 @@ export default function WeekSelector({ weekOf, onPrev, onNext }: Props) {
       <button
         onClick={onPrev}
         className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 active:scale-[0.98]"
-        aria-label="Previous week"
+        aria-label="이전 주"
       >
         &#8249;
       </button>
@@ -42,7 +44,7 @@ export default function WeekSelector({ weekOf, onPrev, onNext }: Props) {
         onClick={onNext}
         disabled={isCurrentWeek}
         className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
-        aria-label="Next week"
+        aria-label="다음 주"
       >
         &#8250;
       </button>

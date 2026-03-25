@@ -4,9 +4,10 @@ import { RoomStats } from "@/lib/types";
 
 type Props = {
   rooms: RoomStats[];
+  periodLabel?: string;
 };
 
-export default function KpiCards({ rooms }: Props) {
+export default function KpiCards({ rooms, periodLabel = "이번 주" }: Props) {
   const totalBookings = rooms.reduce((sum, r) => sum + r.totalBookings, 0);
 
   const totalMinutes = rooms.reduce(
@@ -24,14 +25,14 @@ export default function KpiCards({ rooms }: Props) {
 
   const cards = [
     {
-      label: "Total Bookings",
+      label: "총 예약 수",
       value: totalBookings.toString(),
-      sub: "this week",
+      sub: periodLabel,
     },
     {
-      label: "Avg Duration",
+      label: "평균 시간",
       value: avgDurationLabel,
-      sub: "per booking",
+      sub: "예약 당",
     },
   ];
 
@@ -40,15 +41,15 @@ export default function KpiCards({ rooms }: Props) {
       {cards.map((card) => (
         <div
           key={card.label}
-          className="bg-white border border-slate-200/60 rounded-xl p-5 flex flex-col gap-1 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out cursor-default"
+          className="bg-white border border-slate-200/60 rounded-xl p-4 flex flex-col gap-1 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out cursor-default"
         >
-          <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+          <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">
             {card.label}
           </span>
           <span className="text-3xl font-bold text-slate-900 font-mono tabular-nums">
             {card.value}
           </span>
-          <span className="text-xs text-slate-400">{card.sub}</span>
+          <span className="text-sm text-slate-400">{card.sub}</span>
         </div>
       ))}
     </div>
