@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { HeatmapCell } from "@/lib/types";
 
 type Props = {
@@ -60,6 +60,7 @@ function getDayLabels(weekStartDate?: string): string[] {
 
 export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵", weekStartDate }: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const maxCount = Math.max(...cells.map((c) => c.count), 1);
 
@@ -69,7 +70,7 @@ export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵"
   }
 
   return (
-    <div className="bg-white border border-slate-200/60 rounded-xl p-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out relative">
+    <div ref={containerRef} className="bg-white border border-slate-200/60 rounded-xl p-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out relative">
       <h3 className="text-base font-semibold text-slate-700 mb-3">
         {title}
       </h3>
@@ -115,13 +116,15 @@ export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵"
                     style={{ backgroundColor: bg, color: textColor }}
                     onMouseEnter={(e) => {
                       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                      const containerRect = containerRef.current?.getBoundingClientRect();
+                      if (!containerRect) return;
                       setTooltip({
                         day: dayIdx,
                         hour,
                         count,
                         rooms,
-                        x: rect.left + rect.width / 2,
-                        y: rect.top,
+                        x: rect.left - containerRect.left + rect.width / 2,
+                        y: rect.top - containerRect.top,
                       });
                     }}
                     onMouseLeave={() => setTooltip(null)}
@@ -151,7 +154,7 @@ export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵"
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="fixed z-50 pointer-events-none"
+          className="absolute z-50 pointer-events-none"
           style={{ left: tooltip.x, top: tooltip.y - 8, transform: "translate(-50%, -100%)" }}
         >
           <div className="bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl max-w-[200px]">
