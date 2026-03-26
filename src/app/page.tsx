@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
-import Image from "next/image";
 import Header from "@/components/layout/Header";
 import TabNavigation, { TabId } from "@/components/layout/TabNavigation";
 import ReservationTable from "@/components/reservations/ReservationTable";
@@ -26,10 +25,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-8 -mt-16">
-          <div className="flex flex-col items-center gap-3">
-            <Image src="/dsrv-logo.svg" alt="DSRV" width={56} height={56} />
-            <img src="/dsrv-logotype.svg" alt="DSRV" className="h-8 opacity-80" />
-          </div>
+          <img src="/dsrv-logotype.svg" alt="DSRV" className="h-10 opacity-80" />
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold text-slate-900">회의실 대시보드</h1>
             <p className="text-sm text-slate-500">DSRV 회의실 예약 현황과 통계를 한눈에 확인하세요</p>
