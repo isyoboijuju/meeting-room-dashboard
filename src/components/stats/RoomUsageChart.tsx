@@ -17,8 +17,8 @@ type Props = {
 };
 
 function occupancyColor(pct: number): string {
-  if (pct >= 80) return "#F43F5E"; // rose-500
-  if (pct >= 50) return "#F59E0B"; // amber-500
+  if (pct >= 30) return "#F43F5E"; // rose-500
+  if (pct >= 15) return "#F59E0B"; // amber-500
   return "#10B981"; // emerald-500
 }
 
@@ -66,8 +66,8 @@ export default function RoomUsageChart({ rooms }: Props) {
         >
           <XAxis
             type="number"
-            domain={[0, 50]}
-            tickFormatter={(v) => `${v}%`}
+            domain={[0, (max: number) => Math.ceil(max / 10) * 10 || 40]}
+            tickFormatter={(v: number) => `${v}%`}
             tick={{ fontSize: 12, fill: "#94A3B8" }}
             axisLine={false}
             tickLine={false}
@@ -94,15 +94,15 @@ export default function RoomUsageChart({ rooms }: Props) {
       <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-          &lt;50%
+          &lt;15%
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-          50–80%
+          15–30%
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-          80%+
+          30%+
         </span>
       </div>
     </div>
