@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MeetingRoom } from "@/lib/types";
+import BookingModal from "./BookingModal";
 
 type RecommendResult = MeetingRoom & { availableUntil: string };
 
@@ -13,6 +14,7 @@ export default function RecommendView() {
   const [time, setTime] = useState<string>("09:00");
   const [results, setResults] = useState<RecommendResult[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [bookingRoom, setBookingRoom] = useState<RecommendResult | null>(null);
 
   async function handleSearch() {
     setLoading(true);
@@ -35,8 +37,9 @@ export default function RecommendView() {
 
   function formatAvailableUntil(iso: string): string {
     const d = new Date(iso);
-    const hh = d.getHours().toString().padStart(2, "0");
-    const mm = d.getMinutes().toString().padStart(2, "0");
+    const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+    const hh = kst.getUTCHours().toString().padStart(2, "0");
+    const mm = kst.getUTCMinutes().toString().padStart(2, "0");
     return `${hh}:${mm}`;
   }
 
@@ -132,14 +135,38 @@ export default function RecommendView() {
                       {room.floor} &middot; 수용 인원 {room.capacity}
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
-                    {formatAvailableUntil(room.availableUntil)}까지 사용 가능
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="shrink-0 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                      {formatAvailableUntil(room.availableUntil)}까지 사용 가능
+                    </span>
+                    <button
+                      onClick={() => setBookingRoom(room)}
+                      className={
+                        "shrink-0 text-xs font-medium px-3 py-1 rounded-full text-white bg-indigo-600 " +
+                        "hover:bg-indigo-700 transition-colors duration-200 active:scale-[0.97]"
+                      }
+                    >
+                      예약
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
           )}
         </div>
+      )}
+      {bookingRoom && (
+        <BookingModal
+          room={bookingRoom}
+          date={date}
+          startTime={time}
+          availableUntil={bookingRoom.availableUntil}
+          onClose={() => setBookingRoom(null)}
+          onBooked={() => {
+            setBookingRoom(null);
+            handleSearch();
+          }}
+        />
       )}
     </div>
   );
