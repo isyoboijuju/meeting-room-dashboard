@@ -13,67 +13,54 @@ async function exportPDF(month: string): Promise<void> {
   if (!res.ok) throw new Error(`Report fetch failed: HTTP ${res.status}`);
   const report = await res.json();
 
+  const html2canvas = (await import("html2canvas")).default;
   const { jsPDF } = await import("jspdf");
+
+  const roomRows = report.rooms
+    .map(
+      (room: any) => `
+      <tr>
+        <td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${room.name ?? room.roomId}</td>
+        <td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${room.weeklyOccupancy}%</td>
+        <td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${room.totalBookings}</td>
+        <td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${room.avgDurationMinutes}m</td>
+      </tr>`
+    )
+    .join("");
+
+  const container = document.createElement("div");
+  container.style.cssText =
+    "position:absolute;left:-9999px;top:0;width:800px;padding:40px;font-family:system-ui,-apple-system,sans-serif;background:white;color:#1e293b;";
+  container.innerHTML = `
+    <h1 style="text-align:center;font-size:24px;font-weight:bold;margin:0 0 4px;">DSRV 회의실 리포트</h1>
+    <p style="text-align:center;color:#64748b;font-size:14px;margin:0 0 24px;">기간: ${report.month}</p>
+    <h2 style="font-size:16px;font-weight:bold;margin:0 0 8px;">요약</h2>
+    <p style="font-size:14px;margin:0 0 4px;">총 예약 수: ${report.totalBookings}</p>
+    <p style="font-size:14px;margin:0 0 20px;">평균 소요 시간: ${report.avgDuration}분</p>
+    <h2 style="font-size:16px;font-weight:bold;margin:0 0 8px;">회의실별 통계</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="background:#f1f5f9;">
+          <th style="padding:8px 12px;text-align:left;font-weight:600;">회의실</th>
+          <th style="padding:8px 12px;text-align:left;font-weight:600;">사용률</th>
+          <th style="padding:8px 12px;text-align:left;font-weight:600;">예약 수</th>
+          <th style="padding:8px 12px;text-align:left;font-weight:600;">평균 시간</th>
+        </tr>
+      </thead>
+      <tbody>${roomRows}</tbody>
+    </table>
+  `;
+  document.body.appendChild(container);
+
+  const canvas = await html2canvas(container, { scale: 2 });
+  document.body.removeChild(container);
+
+  const imgData = canvas.toDataURL("image/png");
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-
   const pageW = doc.internal.pageSize.getWidth();
-  let y = 20;
-
-  doc.setFontSize(20);
-  doc.setFont("helvetica", "bold");
-  doc.text("DSRV 회의실 리포트", pageW / 2, y, { align: "center" });
-  y += 8;
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(100);
-  doc.text(`기간: ${report.month}`, pageW / 2, y, { align: "center" });
-  y += 12;
-
-  doc.setFontSize(13);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(24);
-  doc.text("요약", 20, y);
-  y += 7;
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.text(`총 예약 수: ${report.totalBookings}`, 20, y);
-  y += 6;
-  doc.text(`평균 소요 시간: ${report.avgDuration}분`, 20, y);
-  y += 12;
-
-  doc.setFontSize(13);
-  doc.setFont("helvetica", "bold");
-  doc.text("회의실별 통계", 20, y);
-  y += 7;
-
-  const colX = [20, 80, 120, 155];
-  const headers = ["회의실", "사용률", "예약 수", "평균 시간"];
-
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.setFillColor(241, 245, 249);
-  doc.rect(18, y - 4, pageW - 36, 7, "F");
-  headers.forEach((h, i) => {
-    doc.text(h, colX[i], y);
-  });
-  y += 7;
-
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(40);
-  for (const room of report.rooms) {
-    doc.text(String(room.name ?? room.roomId), colX[0], y, { maxWidth: 58 });
-    doc.text(`${room.weeklyOccupancy}%`, colX[1], y);
-    doc.text(String(room.totalBookings), colX[2], y);
-    doc.text(`${room.avgDurationMinutes}m`, colX[3], y);
-    y += 6;
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
-    }
-  }
-
+  const imgW = pageW - 20;
+  const imgH = (canvas.height * imgW) / canvas.width;
+  doc.addImage(imgData, "PNG", 10, 10, imgW, imgH);
   doc.save(`dsrv-report-${report.month}.pdf`);
 }
 
@@ -182,7 +169,7 @@ export default function StatsView() {
             <KpiCards rooms={data.rooms} periodLabel={PERIOD_SUB[query.mode]} />
             <RoomUsageChart rooms={data.rooms} />
           </div>
-          <WeeklyHeatmap cells={data.heatmap} title={HEATMAP_TITLE[query.mode]} />
+          <WeeklyHeatmap cells={data.heatmap} title={HEATMAP_TITLE[query.mode]} weekStartDate={query.mode === "week" ? data.meta?.startDate : undefined} />
         </div>
       )}
     </div>

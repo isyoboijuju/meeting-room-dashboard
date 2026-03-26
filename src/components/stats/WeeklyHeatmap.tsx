@@ -6,6 +6,7 @@ import { HeatmapCell } from "@/lib/types";
 type Props = {
   cells: HeatmapCell[];
   title?: string;
+  weekStartDate?: string;
 };
 
 const DAYS = ["월", "화", "수", "목", "금"];
@@ -44,7 +45,20 @@ type TooltipState = {
   y: number;
 } | null;
 
-export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵" }: Props) {
+function getDayLabels(weekStartDate?: string): string[] {
+  if (!weekStartDate) return DAYS;
+  const [y, m, d] = weekStartDate.split("-").map(Number);
+  const ref = new Date(y, m - 1, d);
+  const dow = (ref.getDay() + 6) % 7;
+  const monday = new Date(y, m - 1, d - dow);
+  return DAYS.map((day, i) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    return `${day}(${date.getMonth() + 1}/${date.getDate()})`;
+  });
+}
+
+export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵", weekStartDate }: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null);
 
   const maxCount = Math.max(...cells.map((c) => c.count), 1);
@@ -72,12 +86,12 @@ export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵"
         >
           <div />
 
-          {DAYS.map((day) => (
+          {getDayLabels(weekStartDate).map((label, idx) => (
             <div
-              key={day}
+              key={idx}
               className="text-center text-sm font-semibold text-slate-500 flex items-center justify-center"
             >
-              {day}
+              {label}
             </div>
           ))}
 

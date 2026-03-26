@@ -66,7 +66,7 @@ export default function RoomUsageChart({ rooms }: Props) {
         >
           <XAxis
             type="number"
-            domain={[0, 100]}
+            domain={[0, 50]}
             tickFormatter={(v) => `${v}%`}
             tick={{ fontSize: 12, fill: "#94A3B8" }}
             axisLine={false}
