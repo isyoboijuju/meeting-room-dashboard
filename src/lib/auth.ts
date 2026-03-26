@@ -16,6 +16,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ profile }) {
+      return profile?.email?.endsWith("@dsrvlabs.com") ?? false;
+    },
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
