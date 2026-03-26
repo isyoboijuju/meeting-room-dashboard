@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { HeatmapCell } from "@/lib/types";
 
 type Props = {
@@ -9,8 +9,19 @@ type Props = {
   weekStartDate?: string;
 };
 
+type Interval = "1h" | "30m";
+
 const DAYS = ["월", "화", "수", "목", "금"];
-const HOURS = Array.from({ length: 10 }, (_, i) => i + 9);
+
+const SLOTS_30M = Array.from({ length: 21 }, (_, i) => ({
+  hour: Math.floor(i / 2) + 9,
+  minute: (i % 2) * 30,
+}));
+
+const SLOTS_1H = Array.from({ length: 11 }, (_, i) => ({
+  hour: i + 9,
+  minute: 0,
+}));
 
 // Indigo gradient: slate-100 → indigo-100 → indigo-300 → indigo-500 → indigo-700
 const INTENSITY_COLORS = [
@@ -39,10 +50,12 @@ function cellTextColor(count: number, maxCount: number): string {
 type TooltipState = {
   day: number;
   hour: number;
+  minute: number;
   count: number;
   rooms: string[];
   x: number;
   y: number;
+  intervalMin: number;
 } | null;
 
 function getDayLabels(weekStartDate?: string): string[] {
@@ -58,29 +71,90 @@ function getDayLabels(weekStartDate?: string): string[] {
   });
 }
 
+function aggregateToHourly(cells: HeatmapCell[]): Map<string, { count: number; rooms: string[] }> {
+  const map = new Map<string, { count: number; rooms: Set<string> }>();
+  for (const cell of cells) {
+    const key = `${cell.day}-${cell.hour}-0`;
+    const existing = map.get(key);
+    if (existing) {
+      existing.count = Math.max(existing.count, cell.count);
+      for (const r of cell.rooms) existing.rooms.add(r);
+    } else {
+      map.set(key, { count: cell.count, rooms: new Set(cell.rooms) });
+    }
+  }
+  const result = new Map<string, { count: number; rooms: string[] }>();
+  for (const [key, val] of map) {
+    result.set(key, { count: val.count, rooms: Array.from(val.rooms) });
+  }
+  return result;
+}
+
 export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵", weekStartDate }: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null);
+  const [interval, setInterval] = useState<Interval>("30m");
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const maxCount = Math.max(...cells.map((c) => c.count), 1);
+  const slots = interval === "30m" ? SLOTS_30M : SLOTS_1H;
+  const intervalMin = interval === "30m" ? 30 : 60;
 
-  const cellMap = new Map<string, HeatmapCell>();
-  for (const cell of cells) {
-    cellMap.set(`${cell.day}-${cell.hour}`, cell);
-  }
+  const cellMap30m = useMemo(() => {
+    const map = new Map<string, HeatmapCell>();
+    for (const cell of cells) {
+      map.set(`${cell.day}-${cell.hour}-${cell.minute}`, cell);
+    }
+    return map;
+  }, [cells]);
+
+  const cellMap1h = useMemo(() => aggregateToHourly(cells), [cells]);
+
+  const activeCellMap = interval === "30m" ? cellMap30m : cellMap1h;
+
+  const maxCount = useMemo(() => {
+    let max = 1;
+    for (const val of activeCellMap.values()) {
+      const c = "count" in val ? val.count : 0;
+      if (c > max) max = c;
+    }
+    return max;
+  }, [activeCellMap]);
 
   return (
     <div ref={containerRef} className="bg-white border border-slate-200/60 rounded-xl p-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out relative">
-      <h3 className="text-base font-semibold text-slate-700 mb-3">
-        {title}
-      </h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-base font-semibold text-slate-700">
+          {title}
+        </h3>
+        <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
+          <button
+            onClick={() => setInterval("1h")}
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-200 ${
+              interval === "1h"
+                ? "bg-white text-indigo-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            1시간
+          </button>
+          <button
+            onClick={() => setInterval("30m")}
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-200 ${
+              interval === "30m"
+                ? "bg-white text-indigo-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            30분
+          </button>
+        </div>
+      </div>
 
       <div className="overflow-x-auto">
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "56px repeat(5, 1fr)",
-            gridTemplateRows: `24px repeat(${HOURS.length}, 1fr)`,
+            gridTemplateRows: `24px repeat(${slots.length}, 1fr)`,
             gap: "3px",
             minWidth: "320px",
           }}
@@ -96,45 +170,53 @@ export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵"
             </div>
           ))}
 
-          {HOURS.map((hour) => (
-            <React.Fragment key={hour}>
-              <div className="text-right text-sm text-slate-400 pr-2 flex items-center justify-end">
-                {hour}:00
-              </div>
+          {slots.map(({ hour, minute }) => {
+            const key = `${hour}-${minute}`;
+            return (
+              <React.Fragment key={key}>
+                <div className="text-right text-xs text-slate-400 pr-2 flex items-center justify-end">
+                  {hour}:{minute.toString().padStart(2, "0")}
+                </div>
 
-              {DAYS.map((_, dayIdx) => {
-                const cell = cellMap.get(`${dayIdx}-${hour}`);
-                const count = cell?.count ?? 0;
-                const rooms = cell?.rooms ?? [];
-                const bg = cellBackground(count, maxCount);
-                const textColor = cellTextColor(count, maxCount);
+                {DAYS.map((_, dayIdx) => {
+                  const cellKey = `${dayIdx}-${hour}-${minute}`;
+                  const cellData = activeCellMap.get(cellKey);
+                  const count = cellData?.count ?? 0;
+                  const rooms = cellData?.rooms ?? [];
+                  const bg = cellBackground(count, maxCount);
+                  const textColor = cellTextColor(count, maxCount);
 
-                return (
-                  <div
-                    key={`${dayIdx}-${hour}`}
-                    className="rounded-md h-8 flex items-center justify-center text-sm font-medium cursor-default transition-all duration-200 hover:ring-2 hover:ring-offset-1 hover:ring-indigo-400 select-none"
-                    style={{ backgroundColor: bg, color: textColor }}
-                    onMouseEnter={(e) => {
-                      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                      const containerRect = containerRef.current?.getBoundingClientRect();
-                      if (!containerRect) return;
-                      setTooltip({
-                        day: dayIdx,
-                        hour,
-                        count,
-                        rooms,
-                        x: rect.left - containerRect.left + rect.width / 2,
-                        y: rect.top - containerRect.top,
-                      });
-                    }}
-                    onMouseLeave={() => setTooltip(null)}
-                  >
-                    {count > 0 ? count : ""}
-                  </div>
-                );
-              })}
-            </React.Fragment>
-          ))}
+                  return (
+                    <div
+                      key={`${dayIdx}-${key}`}
+                      className={`rounded-md flex items-center justify-center text-xs font-medium cursor-default transition-all duration-200 hover:ring-2 hover:ring-offset-1 hover:ring-indigo-400 select-none ${
+                        interval === "30m" ? "h-5" : "h-8"
+                      }`}
+                      style={{ backgroundColor: bg, color: textColor }}
+                      onMouseEnter={(e) => {
+                        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                        const containerRect = containerRef.current?.getBoundingClientRect();
+                        if (!containerRect) return;
+                        setTooltip({
+                          day: dayIdx,
+                          hour,
+                          minute,
+                          count,
+                          rooms,
+                          x: rect.left - containerRect.left + rect.width / 2,
+                          y: rect.top - containerRect.top,
+                          intervalMin,
+                        });
+                      }}
+                      onMouseLeave={() => setTooltip(null)}
+                    >
+                      {count > 0 ? count : ""}
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
 
@@ -159,7 +241,7 @@ export default function WeeklyHeatmap({ cells, title = "주간 예약 히트맵"
         >
           <div className="bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl max-w-[200px]">
             <p className="font-semibold mb-1">
-              {DAYS[tooltip.day]} {tooltip.hour}:00–{tooltip.hour + 1}:00
+              {DAYS[tooltip.day]} {tooltip.hour}:{tooltip.minute.toString().padStart(2, "0")}–{Math.floor((tooltip.hour * 60 + tooltip.minute + tooltip.intervalMin) / 60)}:{((tooltip.hour * 60 + tooltip.minute + tooltip.intervalMin) % 60).toString().padStart(2, "0")}
             </p>
             <p className="text-slate-300">
               {tooltip.count}건 예약

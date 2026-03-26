@@ -25,6 +25,7 @@ export type RoomStats = {
 export type HeatmapCell = {
   day: number;
   hour: number;
+  minute: number; // 0 or 30
   count: number;
   rooms: string[];
 };

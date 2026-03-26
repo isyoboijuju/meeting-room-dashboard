@@ -68,7 +68,7 @@ export default function RoomStatusCard({ room, events, now }: Props) {
     <div
       className={`
         bg-white rounded-xl border ${config.border}
-        p-4 flex flex-col gap-3
+        p-4 flex flex-col gap-3 h-full
         shadow-sm hover:shadow-lg hover:-translate-y-0.5
         transition-all duration-300 ease-out
         cursor-default
@@ -81,7 +81,7 @@ export default function RoomStatusCard({ room, events, now }: Props) {
         </div>
         <span
           className={`
-            inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
+            inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap
             ${config.badge}
           `}
         >

@@ -51,7 +51,7 @@ export async function fetchCalendarEvents(
         start: event.start?.dateTime ?? event.start?.date ?? "",
         end: event.end?.dateTime ?? event.end?.date ?? "",
         roomId,
-        organizer: event.organizer?.email ?? "",
+        organizer: event.creator?.displayName ?? event.creator?.email ?? "",
       };
     })
     .filter((e): e is CalendarEvent => e !== null);

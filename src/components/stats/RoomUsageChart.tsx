@@ -24,7 +24,7 @@ function occupancyColor(pct: number): string {
 
 type TooltipPayloadItem = {
   value: number;
-  payload: { name: string; occupancy: number };
+  payload: { name: string; occupancy: number; bookings: number };
 };
 
 type CustomTooltipProps = {
@@ -34,11 +34,11 @@ type CustomTooltipProps = {
 
 function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
-  const { name, occupancy } = payload[0].payload;
+  const { name, occupancy, bookings } = payload[0].payload;
   return (
     <div className="bg-slate-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg">
       <p className="font-medium">{name}</p>
-      <p className="text-slate-300">{occupancy}% 사용률</p>
+      <p className="text-slate-300">{occupancy}% 사용률 · {bookings}건</p>
     </div>
   );
 }
@@ -75,7 +75,7 @@ export default function RoomUsageChart({ rooms }: Props) {
           <YAxis
             type="category"
             dataKey="name"
-            width={72}
+            width={100}
             tick={{ fontSize: 12, fill: "#475569" }}
             axisLine={false}
             tickLine={false}

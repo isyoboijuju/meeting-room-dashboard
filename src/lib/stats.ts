@@ -55,14 +55,19 @@ export function computeHeatmap(events: CalendarEvent[]): HeatmapCell[] {
     const day = start.dayOfWeek;
     if (day > 4) continue;
 
-    const startHour = Math.max(start.hour, BUSINESS_START);
-    const endHour = Math.min(
-      end.minute > 0 ? end.hour + 1 : end.hour,
-      BUSINESS_END
-    );
+    // Floor start to nearest 30-min slot
+    const startTotalMins = start.hour * 60 + Math.floor(start.minute / 30) * 30;
+    // Ceil end to nearest 30-min slot
+    const endRaw = end.hour * 60 + end.minute;
+    const endTotalMins = end.minute % 30 === 0 ? endRaw : Math.ceil(endRaw / 30) * 30;
 
-    for (let h = startHour; h < endHour; h++) {
-      const key = `${day}-${h}`;
+    const slotStart = Math.max(startTotalMins, BUSINESS_START * 60);
+    const slotEnd = Math.min(endTotalMins, BUSINESS_END * 60);
+
+    for (let mins = slotStart; mins < slotEnd; mins += 30) {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      const key = `${day}-${h}-${m}`;
       if (!grid[key]) grid[key] = { count: 0, rooms: new Set() };
       grid[key].count++;
       const roomName = MEETING_ROOMS.find((r) => r.id === event.roomId)?.name || event.roomId;
@@ -72,11 +77,14 @@ export function computeHeatmap(events: CalendarEvent[]): HeatmapCell[] {
 
   const cells: HeatmapCell[] = [];
   for (let day = 0; day < WEEKDAYS; day++) {
-    for (let hour = BUSINESS_START; hour < BUSINESS_END; hour++) {
-      const entry = grid[`${day}-${hour}`];
+    for (let mins = BUSINESS_START * 60; mins <= BUSINESS_END * 60; mins += 30) {
+      const hour = Math.floor(mins / 60);
+      const minute = mins % 60;
+      const entry = grid[`${day}-${hour}-${minute}`];
       cells.push({
         day,
         hour,
+        minute,
         count: entry?.count || 0,
         rooms: entry ? Array.from(entry.rooms) : [],
       });
