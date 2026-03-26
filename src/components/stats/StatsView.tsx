@@ -32,6 +32,7 @@ async function exportPDF(month: string): Promise<void> {
   container.style.cssText =
     "position:absolute;left:-9999px;top:0;width:800px;padding:40px;font-family:system-ui,-apple-system,sans-serif;background:white;color:#1e293b;";
   container.innerHTML = `
+    <div style="text-align:center;margin:0 0 12px;"><img src="/dsrv-logotype.svg" style="height:32px;display:inline-block;" /></div>
     <h1 style="text-align:center;font-size:24px;font-weight:bold;margin:0 0 4px;">DSRV 회의실 리포트</h1>
     <p style="text-align:center;color:#64748b;font-size:14px;margin:0 0 24px;">기간: ${report.month}</p>
     <h2 style="font-size:16px;font-weight:bold;margin:0 0 8px;">요약</h2>

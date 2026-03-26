@@ -35,7 +35,8 @@ export default function Dashboard() {
           </main>
         </>
       ) : (
-        <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6">
+          <img src="/dsrv-logotype.svg" alt="DSRV" className="h-10 opacity-80" />
           <p className="text-slate-400">대시보드를 보려면 로그인해 주세요.</p>
         </div>
       )}

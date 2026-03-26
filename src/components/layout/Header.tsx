@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Header() {
@@ -27,7 +28,10 @@ export default function Header() {
         </div>
       )}
       <header className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
-        <h1 className="text-xl font-semibold text-slate-900 tracking-tight">DSRV 회의실</h1>
+        <div className="flex items-center gap-2">
+          <Image src="/dsrv-logo.svg" alt="DSRV" width={28} height={28} />
+          <h1 className="text-xl font-semibold text-slate-900 tracking-tight">DSRV 회의실</h1>
+        </div>
         <div className="flex items-center gap-4">
           {session ? (
             <>
