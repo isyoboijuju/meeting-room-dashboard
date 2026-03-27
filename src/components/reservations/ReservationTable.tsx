@@ -83,6 +83,7 @@ export default function ReservationTable() {
                 <th className="px-4 py-3 font-medium">회의실</th>
                 <th className="px-4 py-3 font-medium">회의 제목</th>
                 <th className="px-4 py-3 font-medium">주최자</th>
+                <th className="px-4 py-3 font-medium">참석자</th>
                 <th className="px-4 py-3 font-medium">소요 시간</th>
               </tr>
             </thead>
@@ -90,7 +91,7 @@ export default function ReservationTable() {
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-16 text-center text-slate-400"
                   >
                     해당 날짜에 예약이 없습니다.
@@ -125,6 +126,20 @@ export default function ReservationTable() {
                       </td>
                       <td className="px-4 py-3 text-slate-600">
                         {event.organizer}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {event.attendees.length > 0 ? (
+                          <span title={event.attendees.join(", ")}>
+                            {event.attendees.slice(0, 3).join(", ")}
+                            {event.attendees.length > 3 && (
+                              <span className="text-slate-400 ml-1">
+                                +{event.attendees.length - 3}
+                              </span>
+                            )}
+                          </span>
+                        ) : (
+                          <span className="text-slate-300">—</span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-slate-600 font-mono tabular-nums whitespace-nowrap">
                         {duration}분

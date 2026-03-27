@@ -45,6 +45,11 @@ export async function fetchCalendarEvents(
 
       if (!roomId) return null;
 
+      const attendees = (event.attendees ?? [])
+        .filter((a: any) => !a.resource && !a.self)
+        .map((a: any) => a.displayName ?? a.email ?? "")
+        .filter(Boolean);
+
       return {
         id: event.id ?? "",
         title: event.summary ?? "Untitled",
@@ -52,6 +57,7 @@ export async function fetchCalendarEvents(
         end: event.end?.dateTime ?? event.end?.date ?? "",
         roomId,
         organizer: event.creator?.displayName ?? event.creator?.email ?? "",
+        attendees,
       };
     })
     .filter((e): e is CalendarEvent => e !== null);

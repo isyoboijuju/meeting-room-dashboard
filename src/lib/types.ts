@@ -13,6 +13,7 @@ export type CalendarEvent = {
   end: string;
   roomId: string;
   organizer: string;
+  attendees: string[];
 };
 
 export type RoomStats = {
