@@ -4,7 +4,8 @@ const TABS = [
   { id: "stats", label: "통계 / 히트맵" },
   { id: "today", label: "오늘" },
   { id: "reservations", label: "예약 현황" },
-  { id: "recommend", label: "추천" },
+  { id: "recommend", label: "예약하기" },
+  { id: "calendar", label: "캘린더" },
 ] as const;
 
 export type TabId = (typeof TABS)[number]["id"];

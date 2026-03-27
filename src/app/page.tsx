@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import TabNavigation, { TabId } from "@/components/layout/TabNavigation";
 import ReservationTable from "@/components/reservations/ReservationTable";
 import RecommendView from "@/components/recommend/RecommendView";
+import CalendarEmbed from "@/components/calendar/CalendarEmbed";
 import TodayView from "@/components/today/TodayView";
 import StatsView from "@/components/stats/StatsView";
 
@@ -57,6 +58,7 @@ export default function Dashboard() {
         {activeTab === "today" && <TodayView />}
         {activeTab === "reservations" && <ReservationTable />}
         {activeTab === "recommend" && <RecommendView />}
+        {activeTab === "calendar" && <CalendarEmbed />}
       </main>
     </div>
   );
